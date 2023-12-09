@@ -68,6 +68,7 @@ public class TuringMachine {
 
     public void simulate(ETMType type, String input) {
         this.currentState = this.initialState;
+        boolean recogAccept = true;
         
         this.type = type;
 
@@ -96,6 +97,10 @@ public class TuringMachine {
             }
 
             Transition t = this.currentState.parseSymbol("" + tape.get(head));
+            if (t == null) {
+                recogAccept = false;
+                break;
+            }
 
             tape.set(head, t.getWriteSymbol());
             switch (t.getDirection()) {
@@ -114,13 +119,23 @@ public class TuringMachine {
             iterations++;
         }
 
-        System.out.println("Iterations: " + iterations);
-        System.out.print("TAPE: ");
-        for (int i = 0; i < tape.size(); i++) {
-            System.out.print(tape.get(i));
-        }
+        System.out.println("INPUT: " + input);
 
-        System.out.println();
+        switch (type) {
+            case TRANSDUCER:
+                System.out.print("OUTPUT: ");
+                for (int i = 1; i < tape.size(); i++) {
+                    if (tape.get(i).equals(Driver.BLANK_SYMBOL)) {
+                        break;
+                    }
+                    System.out.print(tape.get(i));
+                }
+                System.out.println();
+            case RECOGNIZER:
+            default:
+                System.out.println(recogAccept ? "ACCEPT" : "REJECT");
+                break;
+        }
     }
     
     @Override

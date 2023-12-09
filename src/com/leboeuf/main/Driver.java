@@ -16,9 +16,6 @@ public class Driver {
         if (args.length < 2) {
             System.out.println(USAGE);
         } else {
-            for (int i  = 0; i < args.length; i++) {
-                System.out.println(args[i]);
-            }
             start(args[0], args[1]);
         }
 
@@ -27,8 +24,6 @@ public class Driver {
     private static void start(String definitionFilepath, String inputFilepath) {
 
         try {
-
-            System.out.println("Reading definition file");
             BufferedReader reader = new BufferedReader(new FileReader(definitionFilepath));
             String line = reader.readLine();
             
@@ -73,22 +68,18 @@ public class Driver {
             reader.close();
 
             // Create TM
-            System.out.println("Creating TM");
             TuringMachine tm = new TuringMachine(stateLabels, null, null, initialState, finalStates, transitionStrings);
-
-            System.out.println("Reading input file");
 
             reader = new BufferedReader(new FileReader(inputFilepath));
             line = reader.readLine();
-            ETMType type = line.strip().toLowerCase().equals("Transducer") ? ETMType.TRANSDUCER : ETMType.RECOGNIZER;
+            ETMType type = line.strip().toLowerCase().equals("transducer") ? ETMType.TRANSDUCER : ETMType.RECOGNIZER;
 
             line = reader.readLine();
             while (line != null) {
-                System.out.println(line);
                 tm.simulate(type, line.strip());
                 line = reader.readLine();
+                System.out.println();
             }
-
 
             reader.close();
 
