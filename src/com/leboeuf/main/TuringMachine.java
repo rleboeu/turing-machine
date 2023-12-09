@@ -1,5 +1,6 @@
 package com.leboeuf.main;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,11 +18,10 @@ public class TuringMachine {
     private Map<String, State> states;
     private ETMType type;
     private State initialState;
+    private State currentState;
 
-    public TuringMachine(ETMType type, List<String> stateLabels, List<String> inputAlphabet, List<String> tapeAlphabet, String initialState, List<String> finalStates, List<String> transitions) {
+    public TuringMachine(String[] stateLabels, String[] inputAlphabet, String[] tapeAlphabet, String initialState, String[] finalStates, List<String> transitions) {
         this.states = new HashMap<String, State>();
-        // set type
-        this.type = type;
 
         // create the states
         for (String label : stateLabels) {
@@ -38,8 +38,13 @@ public class TuringMachine {
         // apply transitions
         for (String transitionString : transitions) {
             // remove parentheses
-            String cleanTString = transitionString.substring(0, transitionString.length() - 1);
+            String cleanTString = transitionString.substring(1, transitionString.length() - 1);
             String[] tokens = cleanTString.split(",");
+
+            // remove whitespace
+            for (int i = 0; i < tokens.length; i++) {
+                tokens[i] = tokens[i].strip();
+            }
 
             State initial = this.states.get(tokens[ORD_INITIAL_STATE]);
             State next = this.states.get(tokens[ORD_NEXT_STATE]);
@@ -49,6 +54,90 @@ public class TuringMachine {
 
             this.states.get(tokens[ORD_INITIAL_STATE]).addTransition(initial, next, onSym, writeSym, direc);
         }
+
+        this.currentState = this.initialState;
+    }
+
+    private void printFinalStates() {
+        for (State s : this.states.values()) {
+            if (s.isAccepting()) {
+                System.out.println(s.getLabel());
+            }
+        }
+    }
+
+    public void simulate(ETMType type, String input) {
+        this.currentState = this.initialState;
+        
+        this.type = type;
+
+        // load the input onto the tape
+        List<String> tape = new ArrayList<String>();
+        for (int i = 0; i < input.length(); i++) {
+            tape.add(input.charAt(i) + "");
+        }
+
+        int head = 0;
+        int iterations = 0;
+        while (this.currentState.isAccepting() == false) {
+            if (this.currentState.isAccepting()) {
+                break;
+            }
+
+
+            if (head < 0) {
+                tape.add(0, Driver.BLANK_SYMBOL);
+                head = 0;
+            }
+
+            if (head == tape.size()) {
+                tape.add(Driver.BLANK_SYMBOL);
+                head = tape.size() - 1;
+            }
+
+            Transition t = this.currentState.parseSymbol("" + tape.get(head));
+
+            tape.set(head, t.getWriteSymbol());
+            switch (t.getDirection()) {
+                case LEFT:
+                    head--;
+                    break;
+                case RIGHT:
+                    head++;
+                    break;
+                case STAY:
+                    break;
+                default:
+                    break;
+            }
+            this.currentState = t.getNextState();
+            iterations++;
+        }
+
+        System.out.println("Iterations: " + iterations);
+        System.out.print("TAPE: ");
+        for (int i = 0; i < tape.size(); i++) {
+            System.out.print(tape.get(i));
+        }
+
+        System.out.println();
     }
     
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (State state : this.states.values()) {
+            sb.append("Label: " + state.getLabel() + "\n");
+            
+            for (Transition t : state.getTransitions()) {
+                sb.append(t.toString() + "\n\n");
+            }
+
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
 }

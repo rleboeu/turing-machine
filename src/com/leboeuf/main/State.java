@@ -1,6 +1,8 @@
 package com.leboeuf.main;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class State {
@@ -38,6 +40,14 @@ public class State {
      */
     public void addTransition(State from, State to, String on, String write, EDirection move) {
         this.transitions.put(on, new Transition(from, to, on, write, move));
+    }
+
+    public List<Transition> getTransitions() {
+        List<Transition> trans = new ArrayList<Transition>();
+        for (Transition t : this.transitions.values()) {
+            trans.add(t);
+        }
+        return trans;
     }
 
     /**
