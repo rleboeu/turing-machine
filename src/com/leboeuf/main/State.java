@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Represents a State of a Turing Machine
+ */
 public class State {
     
     private String label;
@@ -42,6 +45,10 @@ public class State {
         this.transitions.put(on, new Transition(from, to, on, write, move));
     }
 
+    /**
+     * Return a list of the State's Transitions
+     * @return a list of Transitions
+     */
     public List<Transition> getTransitions() {
         List<Transition> trans = new ArrayList<Transition>();
         for (Transition t : this.transitions.values()) {
@@ -74,6 +81,10 @@ public class State {
         return this.isAccepting;
     }
 
+    /**
+     * Set whether not not the State is accepting
+     * @param isAccepting
+     */
     public void setAccepting(boolean isAccepting) {
         this.isAccepting = isAccepting;
     }

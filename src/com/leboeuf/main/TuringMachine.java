@@ -13,10 +13,7 @@ public class TuringMachine {
     public static final int ORD_WRITE_SYM = 3;
     public static final int ORD_MOVE_DIREC = 4;
 
-    private List<String> inputAlphabet;
-    private List<String> tapeAlphabet;
     private Map<String, State> states;
-    private ETMType type;
     private State initialState;
     private State currentState;
 
@@ -58,20 +55,10 @@ public class TuringMachine {
         this.currentState = this.initialState;
     }
 
-    private void printFinalStates() {
-        for (State s : this.states.values()) {
-            if (s.isAccepting()) {
-                System.out.println(s.getLabel());
-            }
-        }
-    }
-
     public void simulate(ETMType type, String input) {
         this.currentState = this.initialState;
         boolean recogAccept = true;
         
-        this.type = type;
-
         // load the input onto the tape
         List<String> tape = new ArrayList<String>();
         for (int i = 0; i < input.length(); i++) {
@@ -79,7 +66,6 @@ public class TuringMachine {
         }
 
         int head = 0;
-        int iterations = 0;
         while (this.currentState.isAccepting() == false) {
             if (this.currentState.isAccepting()) {
                 break;
@@ -116,7 +102,6 @@ public class TuringMachine {
                     break;
             }
             this.currentState = t.getNextState();
-            iterations++;
         }
 
         System.out.println("INPUT: " + input);

@@ -1,5 +1,8 @@
 package com.leboeuf.main;
 
+/**
+ * Enum of possible directions for the Turing Machine's head to move
+ */
 public enum EDirection {
     LEFT("L"), RIGHT("R"), STAY("S");
 
